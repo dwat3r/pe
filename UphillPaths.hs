@@ -62,6 +62,7 @@ gen n = HM.keys $ HM.insert (P (0,0)) 1 $ HM.insert (P (n,n)) 1 (ps (2*n) (P (1,
     ps k acc@(P (bx,by)) s = ps (k-1) next (HM.insert acc 1 s)
       where next = P (bx * 2 `mod` n,by * 3 `mod` n)
 
+--TODO: fix this shit
 --ellista epites
 ellista :: [Point] -> Map Point [Point]
 ellista xs = foldl (\acc x-> M.insert x (filter (x<) xs) acc) M.empty xs
@@ -77,25 +78,20 @@ ellista xs = foldl (\acc x-> M.insert x (filter (x<) xs) acc) M.empty xs
 -- todo: aggregate results which are not needed?
 --points :: Integer -> [Point] -> Map Point [Point] -> Int
 --points n pl m = (arr ! (P (0,0))) - 2 -- source & dest not counted
-points n pl m = f' (P (0,0))
+points n pl m = f (P (0,0))
   where
     -- lazy array to memo f
-    arr = array (P (0,0),P (n,n)) [(p, f' p) | p <- pl]
+    arr = array (P (0,0),P (n,n)) [(p, f p) | p <- pl]
     f p = case M.lookup p m of
-      Just ps -> p : ( (maximumBy (comparing (\x -> deepseq x $ length x)) $ []:[arr ! j | j <- ps])) 
+      Just ps -> p : (maximumBy (comparing length) $ []:[arr ! j | j <- ps])
       Nothing -> []
-    dlength p xs ys | null xs && null ys = EQ
-                    | True = case length xs `compare` length ys of
-      EQ -> dist (P (0,0)) (head xs) `compare` dist (P (0,0)) (head ys)
-      ot -> ot
-    f' = observe "f" f
 
 dist (P (x1,y1)) (P (x2,y2)) = sqrt (fromIntegral ((x2-x1)^2 + (y2-y1)^2))
 
 
 
 --TODO: implement topological sort...
---toposort n = sortBy (comparing $ dist n)
+toposort n = sortBy (comparing $ dist n)
 
 
 solution n = let ps = gen n in points n ps $ ellista ps
@@ -111,18 +107,19 @@ knapsack items wmax = arr ! wmax
 test_ordP = map (\x -> (x,P (4,4) <x)) [P (x,y)| x<-[3..5],y<-[3..5]]
 
 
-main = putStrLn $ drawVerticalTree $ paths 123 (gen 123) $ ellista $ gen 123
+--main = putStrLn $ drawVerticalTree $ paths 123 (gen 123) $ ellista $ gen 123
 
 --all paths
 paths n pl m = f (P (0,0))
   where
     f p = case M.lookup p m of
-      Just ps -> Node (show p) [f j | j <- ps] 
-      Nothing -> Node (show p) []
+      Just ps -> Node p $ map f ps
+      Nothing -> Node p []
 
+tdepth (Node x []) = [x]
+tdepth (Node x branches) = x : maximumBy (comparing length) (map tdepth branches)
 
-
-
+tdepth' (Node _ branches) = 1 + maximum (0 : map tdepth' branches)
 
 
 
