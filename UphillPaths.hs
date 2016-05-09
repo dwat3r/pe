@@ -17,6 +17,7 @@ import Data.Tree.Pretty
 import Debug.Trace (trace,traceShow)
 import Debug.Hood.Observe
 import Control.DeepSeq
+import Control.Parallel.Strategies
 
 -- ellista epites
 newtype Point = P {p :: (Integer,Integer)}
@@ -30,21 +31,8 @@ instance Eq Point where
 
 --TODO: fix ordering
 instance Ord Point where
-  --(<=) (P (x1,y1)) (P (x2,y2)) = x1 <= x2 && y1 <= y2
-  compare (P (x1,y1)) (P (x2,y2)) = case x1 `compare` x2 of
-    LT -> case y1 `compare` y2 of
-      LT -> LT
-      EQ -> LT
-      GT -> GT
-    EQ -> case y1 `compare` y2 of
-      LT -> LT
-      EQ -> EQ
-      GT -> GT
-    GT -> case y1 `compare` y2 of
-      LT -> GT
-      EQ -> GT
-      GT -> GT
-
+  (<=) (P (x1,y1)) (P (x2,y2)) = x1 <= x2 && y1 <= y2
+ 
 instance Hashable Point
 instance Observable Point
 instance Observable Ordering
@@ -64,8 +52,8 @@ gen n = HM.keys $ HM.insert (P (0,0)) 1 $ HM.insert (P (n,n)) 1 (ps (2*n) (P (1,
 
 --TODO: fix this shit
 --ellista epites
-ellista :: [Point] -> Map Point [Point]
-ellista xs = foldl (\acc x-> M.insert x (filter (x<) xs) acc) M.empty xs
+ellista :: [Point] -> HashMap Point [Point]
+ellista xs = foldl (\acc x-> HM.insert x (filter (x<) xs) acc) HM.empty xs
 
 
 
@@ -78,13 +66,22 @@ ellista xs = foldl (\acc x-> M.insert x (filter (x<) xs) acc) M.empty xs
 -- todo: aggregate results which are not needed?
 --points :: Integer -> [Point] -> Map Point [Point] -> Int
 --points n pl m = (arr ! (P (0,0))) - 2 -- source & dest not counted
-points n pl m = f (P (0,0))
+points n m = f (P (0,0)) - 2
+  where
+    -- lazy array to memo f
+    arr = array (P (0,0),P (n,n)) [(p, f p) | p <- HM.keys m]
+    f p = case HM.lookup p m of
+      Just [] -> 1
+      Just ps -> 1 + (maximum $ [arr ! j | j <- ps])
+
+points' n pl m = f (P (0,0))
   where
     -- lazy array to memo f
     arr = array (P (0,0),P (n,n)) [(p, f p) | p <- pl]
-    f p = case M.lookup p m of
-      Just ps -> p : (maximumBy (comparing length) $ []:[arr ! j | j <- ps])
-      Nothing -> []
+    f p = case HM.lookup p m of
+      Just [] -> [p]
+      Just ps -> p : (maximumBy (comparing length) $ [arr ! j | j <- ps])
+
 
 dist (P (x1,y1)) (P (x2,y2)) = sqrt (fromIntegral ((x2-x1)^2 + (y2-y1)^2))
 
@@ -94,7 +91,7 @@ dist (P (x1,y1)) (P (x2,y2)) = sqrt (fromIntegral ((x2-x1)^2 + (y2-y1)^2))
 toposort n = sortBy (comparing $ dist n)
 
 
-solution n = let ps = gen n in points n ps $ ellista ps
+solution n = points n $ ellista $ gen n
 {-
 knapsack items wmax = arr ! wmax
   where
@@ -110,9 +107,9 @@ test_ordP = map (\x -> (x,P (4,4) <x)) [P (x,y)| x<-[3..5],y<-[3..5]]
 --main = putStrLn $ drawVerticalTree $ paths 123 (gen 123) $ ellista $ gen 123
 
 --all paths
-paths n pl m = f (P (0,0))
+paths m = f (P (0,0))
   where
-    f p = case M.lookup p m of
+    f p = case HM.lookup p m of
       Just ps -> Node p $ map f ps
       Nothing -> Node p []
 
