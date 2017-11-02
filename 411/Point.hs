@@ -1,13 +1,12 @@
 module Point where
 
-newtype Point = P {p :: (Int, Int)}
+data Point = P {x :: Int, y :: Int}
 
 instance Show Point where
-  show x = show (p x)
+  show (P x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
 
 instance Eq Point where
-  (==) (P (x1,y1)) (P (x2,y2)) = x1 == x2 && y1 == y2
+  (==) (P x1 y1) (P x2 y2) = x1 == x2 && y1 == y2
 
---TODO: fix ordering
 instance Ord Point where
-  (<=) (P (x1,y1)) (P (x2,y2)) = x1 <= x2 && y1 <= y2
+  (<=) (P x1 y1) (P x2 y2) = x1 <= x2 && y1 <= y2
