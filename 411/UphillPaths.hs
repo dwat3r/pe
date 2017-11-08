@@ -28,17 +28,18 @@ gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
 
 
 points :: Int -> [S.Set Frontier]
-points n = scanl processPoints frontStart $ S.toList $ gen n
+points n = scanl insertPoint leaf $ S.toList $ gen n
 --where
 rootNode = Node (P 0 0) []
-frontStart = S.singleton $ F (fromTree rootNode) 0
+leaf = S.singleton $ F (fromTree rootNode) 0
 
 
-processPoints :: S.Set Frontier -> Point -> S.Set Frontier
-processPoints frontier p = foldl (processFrontier p) S.empty frontier
+insertPoint :: S.Set Frontier -> Point -> S.Set Frontier
+insertPoint leafs p = foldl (processLeafs p) S.empty leafs
 
 
-processFrontier :: Point -> S.Set Frontier -> Frontier -> S.Set Frontier
-processFrontier p newFrontier f@(F fp d) | label fp <= p = {- traceShow  fp $ -} (insertPoint f p) `S.insert` newFrontier
-                                         | otherwise = newFrontier
-insertPoint (F fp d) p = F (insert (Node p []) (children fp)) $ d + 1
+processLeafs :: Point -> S.Set Frontier -> Frontier -> S.Set Frontier
+processLeafs p leafs f@(F fp d) | label fp <= p = {- traceShow  fp $ -} (makeChild f p) `S.insert` leafs
+                                | otherwise     = f `S.insert` leafs
+
+makeChild (F fp d) p = F (insert (Node p []) (children fp)) $ d + 1
