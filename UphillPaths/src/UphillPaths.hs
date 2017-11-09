@@ -4,22 +4,19 @@ import Debug.Trace
 
 import qualified Data.Set as S
 import Data.Tree
-import Data.Tree.Zipper
 
 import Point
 import Draw
 -- todo: rewrite to recursive tree building algorithm
-data Frontier = F {p :: TreePos Full Point, depth :: Int}
-  deriving Eq
 
-instance Ord Frontier where
-  compare (F _ i) (F _ j) = i `compare` j
+-- node with depth
+data NodeD = NodeD { np :: Point, d :: Int }
 
-instance Show Frontier where
-  show (F p d) = show p ++ ", " ++ show d
+instance Show NodeD where
+  show (NodeD p d) = "(" ++ show p ++ "," ++ show d ++ ")"
 
-gen :: Int -> S.Set Point
-gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
+gen :: Int -> [Point]
+gen n = S.toList $ gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
   where
     gen' :: Int -> Point -> S.Set Point -> S.Set Point
     gen' n p s | next n p `S.member` s = s
@@ -27,26 +24,18 @@ gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
     next n (P x y) = P (x * 2 `mod` n) (y * 3 `mod` n)
 
 
-points :: Int -> S.Set Frontier
-points n = foldl insertPoint leaf $ S.toList $ gen n
-  where
-    rootNode = Node (P 0 0) []
-    leaf = S.singleton $ F (fromTree rootNode) 0
+points :: Int -> Tree NodeD
+points n = insertPoints (Node (NodeD (P 0 0) 0) []) $ gen n
 
-insertPoint :: S.Set Frontier -> Point -> S.Set Frontier
-insertPoint leafs p 
-  -- make a new branch with p
-  | i == -1   = f `S.insert` leafs
-  -- extend an existing leaf
-  | otherwise = S.insert (f `makeChild` p) $ S.deleteAt i leafs
-  where
-    (f, i) = foldl (processLeafs p) (S.elemAt 0 leafs, -1) leafs
-  
+-- algorithm works two ways:
+-- make a new branch with p in the tree at some point (use backtracking)
+-- extend an existing leaf
 
-processLeafs :: Point -> (Frontier, Int) -> Frontier -> (Frontier, Int)
-processLeafs p max@(maxf, maxi) f@(F fp d) 
-    | label fp <= p 
-    && d < depth maxf + 1 = (f, maxi + 1)
-    | otherwise = max
+insertPoints :: Tree NodeD -> [Point] -> Tree NodeD
+insertPoints tree@(Node l []) (p:ps)
+    | np l <= p  = insertPoints (tree `makeChild` p) ps
+    | otherwise = undefined -- need to: either branch or try insert at different leaf
+insertPoints tree@(Node l cs) p = Node l (map insertPoints cs)
+    
 
-makeChild (F fp d) p = F (insert (Node p []) (children fp)) $ d + 1
+makeChild (Node l@(NodeD _ d) cs) p = Node l (Node (NodeD p d + 1) [] : cs)
