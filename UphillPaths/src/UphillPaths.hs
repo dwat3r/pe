@@ -8,7 +8,7 @@ import Data.Tree.Zipper
 
 import Point
 import Draw
-
+-- todo: rewrite to recursive tree building algorithm
 data Frontier = F {p :: TreePos Full Point, depth :: Int}
   deriving Eq
 
@@ -27,19 +27,26 @@ gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
     next n (P x y) = P (x * 2 `mod` n) (y * 3 `mod` n)
 
 
-points :: Int -> [S.Set Frontier]
-points n = scanl insertPoint leaf $ S.toList $ gen n
---where
-rootNode = Node (P 0 0) []
-leaf = S.singleton $ F (fromTree rootNode) 0
-
+points :: Int -> S.Set Frontier
+points n = foldl insertPoint leaf $ S.toList $ gen n
+  where
+    rootNode = Node (P 0 0) []
+    leaf = S.singleton $ F (fromTree rootNode) 0
 
 insertPoint :: S.Set Frontier -> Point -> S.Set Frontier
-insertPoint leafs p = foldl (processLeafs p) S.empty leafs
+insertPoint leafs p 
+  -- make a new branch with p
+  | i == -1   = f `S.insert` leafs
+  -- extend an existing leaf
+  | otherwise = S.insert (f `makeChild` p) $ S.deleteAt i leafs
+  where
+    (f, i) = foldl (processLeafs p) (S.elemAt 0 leafs, -1) leafs
+  
 
-
-processLeafs :: Point -> S.Set Frontier -> Frontier -> S.Set Frontier
-processLeafs p leafs f@(F fp d) | label fp <= p = {- traceShow  fp $ -} (makeChild f p) `S.insert` leafs
-                                | otherwise     = f `S.insert` leafs
+processLeafs :: Point -> (Frontier, Int) -> Frontier -> (Frontier, Int)
+processLeafs p max@(maxf, maxi) f@(F fp d) 
+    | label fp <= p 
+    && d < depth maxf + 1 = (f, maxi + 1)
+    | otherwise = max
 
 makeChild (F fp d) p = F (insert (Node p []) (children fp)) $ d + 1

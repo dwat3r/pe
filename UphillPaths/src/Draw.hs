@@ -2,8 +2,8 @@ module Draw where
 
 import Data.Tree
 
-draw :: (Show a) => Tree a -> IO ()
-draw = putStr . unlines . draw'
+draw :: (Show a) => Tree a -> String
+draw = unlines . draw'
 
 draw' :: (Show a) => Tree a -> [String]
 draw' (Node x ts0) = lines (show x) ++ drawSubTrees ts0
