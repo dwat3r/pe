@@ -25,17 +25,23 @@ gen n = S.toList $ gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
 
 
 points :: Int -> Tree NodeD
-points n = insertPoints (Node (NodeD (P 0 0) 0) []) $ gen n
+points n = fst $ insertPoints (Node (NodeD (P 0 0) 0) []) False $ gen n
 
 -- algorithm works two ways:
 -- make a new branch with p in the tree at some point (use backtracking)
 -- extend an existing leaf
-
-insertPoints :: Tree NodeD -> [Point] -> Tree NodeD
-insertPoints tree@(Node l []) (p:ps)
-    | np l <= p  = insertPoints (tree `makeChild` p) ps
-    | otherwise = undefined -- need to: either branch or try insert at different leaf
-insertPoints tree@(Node l cs) p = Node l (map insertPoints cs)
+-- insertPoints: tree to work on - actual point IF being inserted - list of points - (result tree, actual point IS inserted)
+insertPoints :: Tree NodeD -> Bool -> [Point] -> (Tree NodeD, Bool)
+insertPoints t _ [] = (t, True)
+insertPoints tree@(Node l []) False (p:ps)
+    | np l <= p  = (fst $ insertPoints (tree `makeChild` p) False ps, True)
+    | otherwise = (tree, False)
+insertPoints tree@(Node l cs) False ps = (Node l (tryInsert cs), False)
+    where
+      tryInsert (n:ns) | inserted = resultChild:ns
+                       | False    = n:tryInsert ns
+        where
+          (resultChild, inserted) = insertPoints n False ps
     
 
-makeChild (Node l@(NodeD _ d) cs) p = Node l (Node (NodeD p d + 1) [] : cs)
+makeChild (Node l@(NodeD _ d) cs) p = Node l (Node (NodeD p $ d + 1) [] : cs)
