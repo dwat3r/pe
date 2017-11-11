@@ -1,14 +1,17 @@
 -- todo: integrate hunit, tasty or any testing framework
 
-import qualified Data.Set as S
+import Data.List
 import UphillPaths
 import Draw
 
 main :: IO ()
-main = graphicalTest
+main = do
+    --correctnessTest
+    solution
+
+
 
 correctnessTest :: IO ()
-correctnessTest = putStr $ unlines $ zipWith (curry show) (map points [22{-, 123, 10000-}]) [5{-, 14, 48-}]
+correctnessTest = putStr $ unlines $ map (show . s) [22,123,10000]
 
-graphicalTest :: IO ()
-graphicalTest = putStr $ draw $ points 22
+solution = print $ foldl' (\acc k -> acc + s (k^5)) 1 [2..10]
