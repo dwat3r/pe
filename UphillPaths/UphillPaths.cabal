@@ -17,7 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     UphillPaths
   build-depends:       base >= 4.7 && < 5,
-                       containers
+                       containers,
+                       array
   default-language:    Haskell2010
   other-modules:       Point,
                        Draw
@@ -26,9 +27,10 @@ executable UphillPaths-exe
   hs-source-dirs:      app,
                        src
   main-is:             Main.hs
-  ghc-options:         -O -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -O -threaded -rtsopts
   build-depends:       base
-                      ,containers
+                      ,containers,
+                      array
   other-modules:       UphillPaths,
                        Point,
                        Draw
@@ -39,7 +41,8 @@ test-suite UphillPaths-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
-                      ,containers
+                      ,containers,
+                      array
   other-modules:      UphillPaths,
                       Point,
                       Draw
