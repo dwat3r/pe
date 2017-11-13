@@ -1,4 +1,4 @@
-{-# LANGUAGE ViewPatterns, PatternSynonyms, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 module UphillPaths where
 
 import qualified Data.Set as Set
@@ -41,10 +41,12 @@ lis xs = runST $ do
 stack :: (Integral l, Ord e, Ix l, MArray a [e] u)
       => a l [e] -> l -> e -> u l
 stack piles i x = do
-  j <- bsearch piles x i
-  writeArray piles j . (x:) =<< if j == 1 then return []
-                                         else readArray piles (j-1)
-  return $ if j == i+1 then i+1 else i
+  max <- readArray piles i
+  if max <= x then writeArray piles (i+1) x
+    else do
+      j <- bsearch piles x i
+      writeArray piles j . (x:) =<< readArray piles (j-1)
+  return $ if max <= x then i+1 else i
  
 bsearch :: (Integral l, Ord e, Ix l, MArray a [e] u)
         => a l [e] -> e -> l -> u l
