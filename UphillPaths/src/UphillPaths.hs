@@ -33,27 +33,26 @@ s n = length $ lis $ map snd $ gen n
  -- todo: understand and optimize.
 lis :: Ord a => [a] -> [a]
 lis xs = runST $ do
-  let lxs = length xs
-  pileTops <- newSTArray (min 1 lxs , lxs) []
+  pileTops <- newSTArray (1, length xs) 0
   i        <- foldM (stack pileTops) 0 xs
   readArray pileTops i
  
-stack :: (Integral l, Ord e, Ix l, MArray a [e] u)
-      => a l [e] -> l -> e -> u l
+stack :: (Integral l, Ord e, Ix l, MArray a e u)
+      => a l e -> l -> e -> u l
 stack piles i x = do
   max <- readArray piles i
   if max <= x then writeArray piles (i+1) x
     else do
       j <- bsearch piles x i
-      writeArray piles j . (x:) =<< readArray piles (j-1)
+      writeArray piles j x
   return $ if max <= x then i+1 else i
  
-bsearch :: (Integral l, Ord e, Ix l, MArray a [e] u)
-        => a l [e] -> e -> l -> u l
+bsearch :: (Integral l, Ord e, Ix l, MArray a e u)
+        => a l e -> e -> l -> u l
 bsearch piles x = go 1
   where go lo hi | lo > hi   = return lo
                  | otherwise =
-                    do (y:_) <- readArray piles mid
+                    do y <- readArray piles mid
                        if y < x then go (succ mid) hi
                                 else go lo (pred mid)
  
