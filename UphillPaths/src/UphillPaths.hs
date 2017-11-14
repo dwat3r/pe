@@ -25,20 +25,20 @@ gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
 -- solving using longest increasing subsequence problem on the y coordinates 
 
 s :: Int -> Int
-s n = lis (S.foldr' (\p acc -> y p : acc) [] $ gen n) - 2
+s n = lis (gen n) - 2
  -- todo: understand and optimize.
-lis :: [Int] -> Int
+lis :: S.Set Point -> Int
 lis xs = runST $ do
-  pileTops <- newSTUArray (1, length xs)
+  pileTops <- newSTUArray (1, S.size xs)
   foldM (stack pileTops) 1 xs
  
-stack piles i x = do
+stack piles i p@(P _ y) = do
   max <- readArray piles i
-  if max <= x then writeArray piles (i+1) x
+  if max <= y then writeArray piles (i+1) y
     else do
-      j <- bsearch piles x i
-      writeArray piles j x
-  return $ if max <= x then i+1 else i
+      j <- bsearch piles y i
+      writeArray piles j y
+  return $ if max <= y then i+1 else i
 
 bsearch piles x = go 1
   where go lo hi | lo > hi   = return lo
