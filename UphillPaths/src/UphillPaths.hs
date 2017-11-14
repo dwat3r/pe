@@ -14,8 +14,8 @@ import Debug.Trace
 traceMonad :: (Show a, Monad m) => a -> m a
 traceMonad x = trace ("test: " ++ show x) (return x)
 
-gen :: Int -> [Point]
-gen n = S.toList $ gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
+gen :: Int -> S.Set Point
+gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
   where
     gen' :: Int -> Point -> S.Set Point -> S.Set Point
     gen' n p s | next n p `S.member` s = s
@@ -25,7 +25,7 @@ gen n = S.toList $ gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
 -- solving using longest increasing subsequence problem on the y coordinates 
 
 s :: Int -> Int
-s n = lis (map y $ gen n) - 2
+s n = lis (S.foldr' (\p acc -> y p : acc) [] $ gen n) - 2
  -- todo: understand and optimize.
 lis :: [Int] -> Int
 lis xs = runST $ do
