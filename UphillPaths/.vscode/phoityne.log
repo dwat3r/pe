@@ -331,3 +331,20 @@
 2017-11-13 15:41:18 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: leafs"
 2017-11-13 15:41:23 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: p"
 2017-11-13 15:41:23 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: leafs"
+2017-11-14 11:37:01 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: p"
+2017-11-14 11:37:01 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: leafs"
+2017-11-14 11:38:16 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: p"
+2017-11-14 11:38:16 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: leafs"
+2017-11-14 11:38:31 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: p"
+2017-11-14 11:38:31 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: leafs"
+2017-11-14 11:38:40 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: p"
+2017-11-14 11:38:40 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: leafs"
+2017-11-14 11:38:57 [ThreadId 3] ERROR phoityne - "error: * Variable not in scope: xs * Perhaps you meant one of these: `s' (line 23), `x' (<no location info>)"
+2017-11-14 11:38:58 [ThreadId 3] ERROR phoityne - "error: * Variable not in scope: xs * Perhaps you meant one of these: `s' (line 23), `x' (<no location info>)"
+2017-11-14 11:49:16 [ThreadId 3] ERROR phoityne - [deleteBreakPointOnGHCi] invalid delete break point. BreakPointData {nameBreakPointData = "UphillPaths", srcPosBreakPointData = SourcePosition {filePathSourcePosition = "d:\\fun\\train\\pe\\UphillPaths\\src\\UphillPaths.hs", startLineNoSourcePosition = 32, startColNoSourcePosition = -1, endLineNoSourcePosition = -1, endColNoSourcePosition = -1}, breakNoBreakPointData = Nothing, conditionBreakPointData = Nothing, hitConditionBreakPointData = Nothing, hitCountBreakPointData = 0}
+2017-11-14 14:59:35 [ThreadId 3] ERROR phoityne - ghci launch error. <file descriptor: 5>: hPutChar: resource vanished (Broken pipe)
+
+2017-11-14 14:59:35 [ThreadId 3] ERROR phoityne - [disconnectRequestHandler] ghci not started.
+2017-11-14 14:59:45 [ThreadId 3] ERROR phoityne - ghci launch error. <file descriptor: 5>: hPutChar: resource vanished (Broken pipe)
+
+2017-11-14 14:59:45 [ThreadId 3] ERROR phoityne - [disconnectRequestHandler] ghci not started.
