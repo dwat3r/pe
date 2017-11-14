@@ -348,3 +348,5 @@
 2017-11-14 14:59:45 [ThreadId 3] ERROR phoityne - ghci launch error. <file descriptor: 5>: hPutChar: resource vanished (Broken pipe)
 
 2017-11-14 14:59:45 [ThreadId 3] ERROR phoityne - [disconnectRequestHandler] ghci not started.
+2017-11-14 21:52:10 [ThreadId 3] ERROR phoityne - "error: Variable not in scope: i"
+2017-11-14 21:56:31 [ThreadId 3] ERROR phoityne - [deleteBreakPointOnGHCi] invalid delete break point. BreakPointData {nameBreakPointData = "UphillPaths", srcPosBreakPointData = SourcePosition {filePathSourcePosition = "d:\\programs\\code\\pe\\UphillPaths\\src\\UphillPaths.hs", startLineNoSourcePosition = 32, startColNoSourcePosition = -1, endLineNoSourcePosition = -1, endColNoSourcePosition = -1}, breakNoBreakPointData = Nothing, conditionBreakPointData = Nothing, hitConditionBreakPointData = Nothing, hitCountBreakPointData = 0}

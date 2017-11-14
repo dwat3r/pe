@@ -2,15 +2,16 @@
 
 import Data.List (foldl')
 import UphillPaths
+import Control.Parallel.Strategies
 
 main :: IO ()
 main = do
-    correctnessTest
-    --solution
+    --correctnessTest
+    solution
 
 
 
 correctnessTest :: IO ()
 correctnessTest = putStr $ unlines $ map (show . s) [123]
 
---solution = print $ foldl' (\acc k -> acc + s (k^5)) 1 [2..10]
+solution = print $ sum $ map (\k -> s (k^5)) [1..30]
