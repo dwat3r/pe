@@ -30,8 +30,8 @@ executable UphillPaths-exe
   ghc-options:         -O2 -threaded -rtsopts -optc-O3 -fforce-recomp -funfolding-use-threshold=16
   build-depends:       base,
                        containers,
-                       array,
-                       parallel
+                       array
+                       --parallel
   other-modules:       UphillPaths,
                        Point
   default-language:    Haskell2010

@@ -6,8 +6,8 @@ import Control.Parallel.Strategies
 
 main :: IO ()
 main = do
-    --correctnessTest
-    solution
+    correctnessTest
+    --solution
 
 
 

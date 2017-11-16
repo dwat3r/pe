@@ -15,13 +15,13 @@ traceMonad :: (Show a, Monad m) => a -> m a
 traceMonad x = trace ("test: " ++ show x) (return x)
 
 gen :: Int -> S.Set Point
-gen n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
+gen !n = gen' n (P 1 1) $ S.fromList [P 1 1, P n n]
   where
     gen' :: Int -> Point -> S.Set Point -> S.Set Point
-    gen' n p s | nextP `S.member` s = s
-               | otherwise = gen' n nextP (S.insert nextP s)
+    gen' !n !p !s | () !n !p !s !False = undefined --unbox
+                  | next n p `S.member` s = s
+                  | otherwise = gen' n (next n p) (S.insert (next n p) s)
         where
-          nextP = next n p
           next !n (P !x !y) = P (x * 2 `mod` n) (y * 3 `mod` n)
 
 -- solving using longest increasing subsequence problem on the y coordinates 
